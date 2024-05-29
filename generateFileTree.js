@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 /**
  * Recursively traverse the directory structure and build a file tree object.
@@ -20,7 +20,7 @@ function buildFileTree(dir, ignoreDirs) {
         if (stat.isDirectory()) {
             fileTree[file] = buildFileTree(filePath, ignoreDirs);
         } else {
-            fileTree[file] = 'file';
+            fileTree[file] = "file";
         }
     });
 
@@ -43,19 +43,21 @@ function generateFileTree(repoPath, ignoreDirs) {
  * @param {string} prefix - The prefix for the current level.
  * @returns {string} - The formatted tree string.
  */
-function formatFileTree(tree, prefix = '') {
-    let treeString = '';
+function formatFileTree(tree, prefix = "") {
+    let treeString = "";
 
     const keys = Object.keys(tree);
     keys.forEach((key, index) => {
         const isLast = index === keys.length - 1;
-        const newPrefix = prefix + (isLast ? '└── ' : '├── ');
+        const newPrefix = prefix + (isLast ? "└── " : "├── ");
         treeString += `${newPrefix}${key}`;
 
-        if (tree[key] === 'file') {
-            treeString += '\n';
+        if (tree[key] === "file") {
+            treeString += "\n";
         } else {
-            treeString += '/\n' + formatFileTree(tree[key], prefix + (isLast ? '    ' : '│   '));
+            treeString +=
+                "/\n" +
+                formatFileTree(tree[key], prefix + (isLast ? "    " : "│   "));
         }
     });
 
@@ -64,10 +66,16 @@ function formatFileTree(tree, prefix = '') {
 
 // Example usage:
 // Replace 'c:/Users/charlie.palmer/petooly-mobile-application' with the actual path to the repository
-const repoPath = 'c:/Users/charlie.palmer/petooly-mobile-application';  // Use forward slashes
+const repoPath = "c:/Users/charlie.palmer/petooly-mobile-application"; // Use forward slashes
 
 // Set of directories to ignore
-const ignoreDirs = new Set(['node_modules', '.git']);
+const ignoreDirs = new Set([
+    "node_modules",
+    ".git",
+    ".husky",
+    "android",
+    "ios",
+]);
 
 const fileTree = generateFileTree(repoPath, ignoreDirs);
 const formattedTree = formatFileTree(fileTree);
@@ -75,6 +83,6 @@ const formattedTree = formatFileTree(fileTree);
 console.log(formattedTree);
 
 // Optionally, write the formatted tree to a text file
-const outputFilePath = path.join(repoPath, 'fileTree.txt');
+const outputFilePath = path.join(repoPath, "fileTree.txt");
 fs.writeFileSync(outputFilePath, formattedTree);
 console.log(`File tree written to ${outputFilePath}`);
